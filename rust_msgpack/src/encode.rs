@@ -1,3 +1,4 @@
+use crate::binary;
 use crate::codes;
 use crate::time;
 use crate::utils;
@@ -42,32 +43,21 @@ impl Encoder {
     fn write2(&mut self, c: codes::Code, n: u16) -> Result<(), Box<dyn std::error::Error>> {
         let mut buf: [u8; 3] = [0; 3];
         buf[0] = c;
-        buf[1] = (n >> 8) as u8;
-        buf[2] = n as u8;
+        binary::BigEndian::put_uint16(&mut buf[1..3], n);
         self.write(&buf)
     }
 
     fn write4(&mut self, c: codes::Code, n: u32) -> Result<(), Box<dyn std::error::Error>> {
         let mut buf: [u8; 5] = [0; 5];
         buf[0] = c;
-        buf[1] = (n >> 24) as u8;
-        buf[2] = (n >> 16) as u8;
-        buf[3] = (n >> 8) as u8;
-        buf[4] = n as u8;
+        binary::BigEndian::put_uint32(&mut buf[1..5], n);
         self.write(&buf)
     }
 
     fn write8(&mut self, c: codes::Code, n: u64) -> Result<(), Box<dyn std::error::Error>> {
         let mut buf: [u8; 9] = [0; 9];
         buf[0] = c;
-        buf[1] = (n >> 56) as u8;
-        buf[2] = (n >> 48) as u8;
-        buf[3] = (n >> 40) as u8;
-        buf[4] = (n >> 32) as u8;
-        buf[5] = (n >> 24) as u8;
-        buf[6] = (n >> 16) as u8;
-        buf[7] = (n >> 8) as u8;
-        buf[8] = n as u8;
+        binary::BigEndian::put_uint64(&mut buf[1..9], n);
         self.write(&buf)
     }
 

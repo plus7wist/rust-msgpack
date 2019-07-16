@@ -1,5 +1,4 @@
 use crate::binary;
-use std::time::Duration;
 use std::time::SystemTime;
 
 pub fn encode_time(t: SystemTime) -> Vec<u8> {

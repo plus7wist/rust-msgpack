@@ -1,4 +1,5 @@
 pub mod binary;
+pub mod bytes;
 pub mod codes;
 pub mod decode;
 pub mod encode;

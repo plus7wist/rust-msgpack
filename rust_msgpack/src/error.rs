@@ -7,6 +7,7 @@ pub enum Error {
     EOFError,
     RWNotMatch,
     InvalidCode(u8),
+    InvalidExtLen(i32),
 }
 
 impl fmt::Display for Error {
@@ -16,6 +17,7 @@ impl fmt::Display for Error {
             Error::EOFError => f.write_str("EOFError"),
             Error::RWNotMatch => f.write_str("RWNotMatch"),
             Error::InvalidCode(c) => write!(f, "InvalidCode: {}", c),
+            Error::InvalidExtLen(c) => write!(f, "InvalidExtLen: {}", c),
         }
     }
 }
@@ -27,6 +29,7 @@ impl StdError for Error {
             Error::InternalError => "Internal error",
             Error::RWNotMatch => "read write not match with expected number",
             Error::InvalidCode(_) => "Invalid codes::Code",
+            Error::InvalidExtLen(_) => "Invalid Ext Len",
         }
     }
 }

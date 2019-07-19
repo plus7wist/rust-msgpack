@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "rust_msgpack",
-    "rust_msgpack_demo",
+    "value",
+    "value_derive",
 ]

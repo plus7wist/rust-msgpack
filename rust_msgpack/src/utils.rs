@@ -21,16 +21,8 @@ where
     T: Copy,
 {
     let minlen = min(dst.len(), src.len());
-    let src_end_idx = if minlen < src.len() {
-        minlen
-    } else {
-        src.len()
-    };
-    let dst_end_idx = if minlen < dst.len() {
-        minlen
-    } else {
-        dst.len()
-    };
+    let src_end_idx = min(minlen, src.len());
+    let dst_end_idx = min(minlen, dst.len());
     dst[..dst_end_idx].copy_from_slice(&src[..src_end_idx]);
     minlen as i64
 }

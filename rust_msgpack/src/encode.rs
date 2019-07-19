@@ -1,11 +1,12 @@
 use crate::binary;
 use crate::codes;
+use crate::error::Error as RMError;
 use crate::time;
 use crate::utils;
 use std::time::SystemTime;
 
 pub struct Encoder {
-    buf: Vec<u8>,
+    pub buf: Vec<u8>,
 }
 
 impl Encoder {
@@ -13,59 +14,59 @@ impl Encoder {
         Encoder { buf: Vec::new() }
     }
 
-    fn write_code(&mut self, c: codes::Code) -> Result<(), Box<dyn std::error::Error>> {
+    fn write_code(&mut self, c: codes::Code) -> Result<(), RMError> {
         self.buf.push(c);
         Ok(())
     }
 
-    fn write_byte(&mut self, c: u8) -> Result<(), Box<dyn std::error::Error>> {
+    fn write_byte(&mut self, c: u8) -> Result<(), RMError> {
         self.buf.push(c);
         Ok(())
     }
 
-    fn write(&mut self, b: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
+    fn write(&mut self, b: &[u8]) -> Result<(), RMError> {
         self.buf.extend(b.iter().cloned());
         Ok(())
     }
 
-    fn write_string(&mut self, s: &str) -> Result<(), Box<dyn std::error::Error>> {
+    fn write_string(&mut self, s: &str) -> Result<(), RMError> {
         self.buf.extend(s.as_bytes().iter().cloned());
         Ok(())
     }
 
-    fn write1(&mut self, c: codes::Code, n: u8) -> Result<(), Box<dyn std::error::Error>> {
+    fn write1(&mut self, c: codes::Code, n: u8) -> Result<(), RMError> {
         let mut buf: [u8; 2] = [0; 2];
         buf[0] = c;
         buf[1] = n;
         self.write(&buf)
     }
 
-    fn write2(&mut self, c: codes::Code, n: u16) -> Result<(), Box<dyn std::error::Error>> {
+    fn write2(&mut self, c: codes::Code, n: u16) -> Result<(), RMError> {
         let mut buf: [u8; 3] = [0; 3];
         buf[0] = c;
         binary::BigEndian::put_uint16(&mut buf[1..3], n);
         self.write(&buf)
     }
 
-    fn write4(&mut self, c: codes::Code, n: u32) -> Result<(), Box<dyn std::error::Error>> {
+    fn write4(&mut self, c: codes::Code, n: u32) -> Result<(), RMError> {
         let mut buf: [u8; 5] = [0; 5];
         buf[0] = c;
         binary::BigEndian::put_uint32(&mut buf[1..5], n);
         self.write(&buf)
     }
 
-    fn write8(&mut self, c: codes::Code, n: u64) -> Result<(), Box<dyn std::error::Error>> {
+    fn write8(&mut self, c: codes::Code, n: u64) -> Result<(), RMError> {
         let mut buf: [u8; 9] = [0; 9];
         buf[0] = c;
         binary::BigEndian::put_uint64(&mut buf[1..9], n);
         self.write(&buf)
     }
 
-    pub fn encode_nil(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn encode_nil(&mut self) -> Result<(), RMError> {
         self.write_code(codes::NIL)
     }
 
-    pub fn encode_bool(&mut self, value: bool) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn encode_bool(&mut self, value: bool) -> Result<(), RMError> {
         if value {
             return self.write_code(codes::TRUE);
         }
@@ -74,14 +75,14 @@ impl Encoder {
 }
 
 impl Encoder {
-    pub fn encode_string(&mut self, v: &str) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn encode_string(&mut self, v: &str) -> Result<(), RMError> {
         if let Err(error) = self.encode_str_len(v.len() as i32) {
             return Err(error);
         }
         self.write_string(v)
     }
 
-    fn encode_str_len(&mut self, l: i32) -> Result<(), Box<dyn std::error::Error>> {
+    fn encode_str_len(&mut self, l: i32) -> Result<(), RMError> {
         if l < 32 {
             return self.write_code(codes::FIXED_STR_LOW | (l as codes::Code));
         }
@@ -96,14 +97,14 @@ impl Encoder {
 }
 
 impl Encoder {
-    pub fn encode_bytes(&mut self, v: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn encode_bytes(&mut self, v: &[u8]) -> Result<(), RMError> {
         if let Err(error) = self.encode_bytes_len(v.len() as i32) {
             return Err(error);
         }
         self.write(v)
     }
 
-    fn encode_bytes_len(&mut self, l: i32) -> Result<(), Box<dyn std::error::Error>> {
+    fn encode_bytes_len(&mut self, l: i32) -> Result<(), RMError> {
         if l < 256 {
             return self.write1(codes::BIN_8, l as u8);
         }
@@ -115,7 +116,7 @@ impl Encoder {
 }
 
 impl Encoder {
-    pub fn encode_int(&mut self, v: i64) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn encode_int(&mut self, v: i64) -> Result<(), RMError> {
         if v >= 0 {
             return self.encode_uint(v as u64);
         }
@@ -134,7 +135,7 @@ impl Encoder {
         self.write8(codes::INT_64, v as u64)
     }
 
-    pub fn encode_uint(&mut self, v: u64) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn encode_uint(&mut self, v: u64) -> Result<(), RMError> {
         if v <= (std::i8::MAX as u64) {
             return self.write_byte(v as u8);
         }
@@ -152,17 +153,17 @@ impl Encoder {
 }
 
 impl Encoder {
-    pub fn encode_float32(&mut self, f: f32) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn encode_float32(&mut self, f: f32) -> Result<(), RMError> {
         self.write4(codes::FLOAT_32, utils::float32bits(f))
     }
 
-    pub fn encode_float64(&mut self, f: f64) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn encode_float64(&mut self, f: f64) -> Result<(), RMError> {
         self.write8(codes::FLOAT_64, utils::float64bits(f))
     }
 }
 
 impl Encoder {
-    pub fn encode_array_len(&mut self, l: i32) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn encode_array_len(&mut self, l: i32) -> Result<(), RMError> {
         if l < 16 {
             return self.write_code(codes::FIXED_ARRAY_LOW | (l as codes::Code));
         }
@@ -174,7 +175,7 @@ impl Encoder {
 }
 
 impl Encoder {
-    pub fn encode_map_len(&mut self, l: i32) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn encode_map_len(&mut self, l: i32) -> Result<(), RMError> {
         if l < 16 {
             return self.write_code(codes::FIXED_MAP_LOW | (l as codes::Code));
         }
@@ -186,7 +187,7 @@ impl Encoder {
 }
 
 impl Encoder {
-    fn encode_ext_len(&mut self, l: i32) -> Result<(), Box<dyn std::error::Error>> {
+    fn encode_ext_len(&mut self, l: i32) -> Result<(), RMError> {
         if l == 1 {
             return self.write_code(codes::FIX_EXT_1);
         }
@@ -213,7 +214,7 @@ impl Encoder {
 }
 
 impl Encoder {
-    pub fn encode_time(&mut self, t: SystemTime) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn encode_time(&mut self, t: SystemTime) -> Result<(), RMError> {
         let b = time::encode_time(t);
         if let Err(error) = self.encode_ext_len(b.len() as i32) {
             return Err(error);

@@ -8,5 +8,7 @@ edition = "2018"
 
 [dependencies]
 rust_msgpack = { version = "0.1.0", path = "../../rust_msgpack" }
+value_derive = { path = "../../value_derive" }
+value = { path = "../../value" }
 
 [workspace]

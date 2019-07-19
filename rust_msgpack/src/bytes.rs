@@ -61,6 +61,14 @@ impl<'a> Reader<'a> {
         Ok(b)
     }
 
+    pub fn unread_byte(&mut self) -> Result<(), RMError> {
+        if self.i <= 0 {
+            return Err(RMError::EOFError);
+        }
+        self.i -= 1;
+        Ok(())
+    }
+
     pub fn reset(&mut self) {
         self.i = 0;
     }

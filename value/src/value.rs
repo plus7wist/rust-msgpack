@@ -34,6 +34,13 @@ impl Value {
             Value::Object(_) => "Object".to_string(),
         }
     }
+
+    pub fn get_string(&self) -> std::string::String {
+        match self {
+            Value::String(s) => s.clone(),
+            _ => panic!("value is not string"),
+        }
+    }
 }
 
 impl Value {

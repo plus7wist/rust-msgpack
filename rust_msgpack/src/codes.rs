@@ -242,6 +242,55 @@ pub fn is_ext(c: Code) -> bool {
     (c >= FIX_EXT_1 && c <= FIX_EXT_16) || (c >= EXT_8 && c <= EXT_32)
 }
 
+pub fn is_nil(c: Code) -> bool {
+    c == NIL
+}
+
+pub fn is_bool(c: Code) -> bool {
+    c == FALSE || c == TRUE
+}
+
+pub fn is_number(c: Code) -> bool {
+    if is_fixed_num(c) {
+        return true;
+    }
+    c == FLOAT_32
+        || c == FLOAT_64
+        || c == UINT_8
+        || c == UINT_16
+        || c == UINT_32
+        || c == UINT_64
+        || c == INT_8
+        || c == INT_16
+        || c == INT_32
+        || c == INT_64
+}
+
+pub fn is_string(c: Code) -> bool {
+    if is_fixed_string(c) {
+        return true;
+    }
+    c == STR_8 || c == STR_16 || c == STR_32
+}
+
+pub fn is_bin_array(c: Code) -> bool {
+    c == BIN_8 || c == BIN_16 || c == BIN_32
+}
+
+pub fn is_array(c: Code) -> bool {
+    if c >= FIXED_ARRAY_LOW && c <= FIXED_ARRAY_HIGH {
+        return true;
+    }
+    c == ARRAY_16 || c == ARRAY_32
+}
+
+pub fn is_hashmap(c: Code) -> bool {
+    if c >= FIXED_MAP_LOW && c <= FIXED_MAP_HIGH {
+        return true;
+    }
+    c == MAP_16 || c == MAP_32
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

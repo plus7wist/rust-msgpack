@@ -18,17 +18,17 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    fn read_code(&mut self) -> Result<codes::Code, RMError> {
+    pub fn read_code(&mut self) -> Result<codes::Code, RMError> {
         let c = self.r.read_byte()?;
         Ok(c as codes::Code)
     }
 
-    fn read_byte(&mut self) -> Result<u8, RMError> {
+    pub fn read_byte(&mut self) -> Result<u8, RMError> {
         let c = self.r.read_byte()?;
         Ok(c)
     }
 
-    fn read_n(&mut self, n: i32) -> Result<Vec<u8>, RMError> {
+    pub fn read_n(&mut self, n: i32) -> Result<Vec<u8>, RMError> {
         let mut buf: Vec<u8> = vec![0; n as usize];
         let readcount = self.r.read(&mut buf)?;
         if readcount != (n as i64) {
@@ -76,7 +76,7 @@ impl<'a> Decoder<'a> {
         Ok(n as i64)
     }
 
-    fn read_uint(&mut self, c: codes::Code) -> Result<u64, RMError> {
+    pub fn read_uint(&mut self, c: codes::Code) -> Result<u64, RMError> {
         if c == codes::NIL {
             return Ok(0);
         }
@@ -118,7 +118,7 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    fn read_int(&mut self, c: codes::Code) -> Result<i64, RMError> {
+    pub fn read_int(&mut self, c: codes::Code) -> Result<i64, RMError> {
         if c == codes::NIL {
             return Ok(0);
         }
@@ -241,7 +241,7 @@ impl<'a> Decoder<'a> {
         self.decode_string_content(c)
     }
 
-    fn decode_string_content(&mut self, c: codes::Code) -> Result<String, RMError> {
+    pub fn decode_string_content(&mut self, c: codes::Code) -> Result<String, RMError> {
         let n = self.bytes_len(c)?;
         if n <= 0 {
             return Ok("".to_string());
@@ -253,6 +253,10 @@ impl<'a> Decoder<'a> {
 
     pub fn decode_bytes(&mut self) -> Result<Vec<u8>, RMError> {
         let c = self.read_code()?;
+        self.decode_bytes_content(c)
+    }
+
+    pub fn decode_bytes_content(&mut self, c: codes::Code) -> Result<Vec<u8>, RMError> {
         let n = self.bytes_len(c)?;
         if n == -1 {
             return Ok(Vec::new());
@@ -265,6 +269,10 @@ impl<'a> Decoder<'a> {
 impl<'a> Decoder<'a> {
     pub fn decode_bool(&mut self) -> Result<bool, RMError> {
         let c = self.read_code()?;
+        self.read_bool(c)
+    }
+
+    pub fn read_bool(&mut self, c: codes::Code) -> Result<bool, RMError> {
         match c {
             codes::FALSE => Ok(false),
             codes::TRUE => Ok(true),
@@ -279,7 +287,7 @@ impl<'a> Decoder<'a> {
         self.read_float32(c)
     }
 
-    fn read_float32(&mut self, c: codes::Code) -> Result<f32, RMError> {
+    pub fn read_float32(&mut self, c: codes::Code) -> Result<f32, RMError> {
         if c == codes::FLOAT_32 {
             let n = self.read_uint32()?;
             return Ok(utils::float32frombits(n));
@@ -294,7 +302,7 @@ impl<'a> Decoder<'a> {
         self.read_float64(c)
     }
 
-    fn read_float64(&mut self, c: codes::Code) -> Result<f64, RMError> {
+    pub fn read_float64(&mut self, c: codes::Code) -> Result<f64, RMError> {
         if c == codes::FLOAT_32 {
             let n = self.read_float32(c)?;
             return Ok(n as f64);
@@ -368,11 +376,11 @@ impl<'a> Decoder<'a> {
         self.array_len(c)
     }
 
-    fn array_len(&mut self, c: codes::Code) -> Result<i32, RMError> {
+    pub fn array_len(&mut self, c: codes::Code) -> Result<i32, RMError> {
         if c == codes::NIL {
             return Ok(-1);
         }
-        if c >= codes::FIXED_ARRAY_LOW && c <= codes::FIXED_ARRAY_HIGH {
+        if codes::is_fixed_array(c) {
             return Ok((c & codes::FIXED_ARRAY_MASK) as i32);
         }
         match c {
@@ -395,11 +403,11 @@ impl<'a> Decoder<'a> {
         self.map_len(c)
     }
 
-    fn map_len(&mut self, c: codes::Code) -> Result<i32, RMError> {
+    pub fn map_len(&mut self, c: codes::Code) -> Result<i32, RMError> {
         if c == codes::NIL {
             return Ok(-1);
         }
-        if c >= codes::FIXED_MAP_LOW && c <= codes::FIXED_MAP_HIGH {
+        if codes::is_fixed_map(c) {
             return Ok((c & codes::FIXED_MAP_MASK) as i32);
         }
         match c {

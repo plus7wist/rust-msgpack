@@ -38,8 +38,11 @@ fn main() {
     println!("v = {}", v);
 
     let bin = transvalue::msgpack_from_value(&v);
-    println!("bin = {:?}", bin);
+    println!("bin = {:?}\n", bin);
 
-    //let s2: Student = v.from_value();
-    //println!("s2 = {:?}", s2);
+    let v2 = transvalue::msgpack_into_value(&bin);
+    println!("v2 = {}", v2);
+
+    let s2: Student = v2.from_value();
+    println!("s2 = {:?}", s2);
 }

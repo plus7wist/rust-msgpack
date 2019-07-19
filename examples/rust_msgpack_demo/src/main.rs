@@ -34,13 +34,13 @@ fn main() {
 
     println!("s1 = {:?}\n", s1);
 
-    let v: Value = s1.into_value();
-    println!("v = {}", v);
+    let v1: Value = s1.into_value();
+    println!("v1 = {}", v1);
 
-    let bin = transvalue::msgpack_from_value(&v);
+    let bin = transvalue::msgpack_from_value(&v1).unwrap();
     println!("bin = {:?}\n", bin);
 
-    let v2 = transvalue::msgpack_into_value(&bin);
+    let v2 = transvalue::msgpack_into_value(&bin).unwrap();
     println!("v2 = {}", v2);
 
     let s2: Student = v2.from_value();

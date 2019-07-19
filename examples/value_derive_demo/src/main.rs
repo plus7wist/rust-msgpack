@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use value::from_value::FromValue;
 use value::into_value::IntoValue;
 use value::value::Value;
@@ -14,10 +15,11 @@ struct Student {
 struct Sub {
     a: i32,
     b: bool,
+    c: HashMap<String, String>,
 }
 
 fn main() {
-    let s1 = Student {
+    let mut s1 = Student {
         name: "huangjian".to_string(),
         age: 10000,
         sub: Sub {
@@ -26,6 +28,9 @@ fn main() {
         },
         ..Default::default()
     };
+    s1.sub.c = HashMap::new();
+    s1.sub.c.insert("language".to_string(), "Rust".to_string());
+
     println!("s1 = {:?}\n", s1);
 
     let v: Value = s1.into_value();

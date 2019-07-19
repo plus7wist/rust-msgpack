@@ -24,6 +24,19 @@ impl Default for Value {
 }
 
 impl Value {
+    pub fn get_type(&self) -> String {
+        match self {
+            Value::Null => "Null".to_string(),
+            Value::Bool(_) => "Bool".to_string(),
+            Value::Number(_) => "Number".to_string(),
+            Value::String(_) => "String".to_string(),
+            Value::Array(_) => "Array".to_string(),
+            Value::Object(_) => "Object".to_string(),
+        }
+    }
+}
+
+impl Value {
     fn format_value(&self, input: &Value, level: i32) -> String {
         match input {
             Value::Null => self.format_null(),

@@ -5,6 +5,12 @@ pub trait IntoValue<T>: Default {
     fn into_value(self) -> Value;
 }
 
+impl IntoValue<Value> for Value {
+    fn into_value(self) -> Value {
+        self
+    }
+}
+
 impl IntoValue<bool> for bool {
     fn into_value(self) -> Value {
         Value::Bool(self)
@@ -23,9 +29,32 @@ impl IntoValue<Vec<Value>> for Vec<Value> {
     }
 }
 
-impl IntoValue<HashMap<String, Value>> for HashMap<String, Value> {
+//impl IntoValue<HashMap<String, Value>> for HashMap<String, Value> {
+//    fn into_value(self) -> Value {
+//        Value::Object(self)
+//    }
+//}
+
+impl<HK, HV> IntoValue<HashMap<HK, HV>> for HashMap<HK, HV>
+where
+    HK: std::str::FromStr + std::string::ToString + std::hash::Hash + std::cmp::Eq,
+    HV: IntoValue<HV>,
+{
     fn into_value(self) -> Value {
-        Value::Object(self)
+        let mut src = self;
+        let mut hm: HashMap<String, Value> = HashMap::new();
+        let keys: Vec<String> = src.keys().map(|k| k.to_string()).collect();
+        for key in keys {
+            let k = HK::from_str(&key);
+            match k {
+                Ok(k) => {
+                    let value = src.remove(&k).unwrap();
+                    hm.insert(key.to_string(), value.into_value());
+                }
+                Err(_) => panic!("invalid IntoValue<HashMap<HK, HV>>"),
+            }
+        }
+        Value::Object(hm)
     }
 }
 

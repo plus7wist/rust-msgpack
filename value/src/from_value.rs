@@ -36,7 +36,25 @@ impl FromValue<HashMap<String, Value>> for Value {
     fn from_value(self) -> HashMap<String, Value> {
         match self {
             Value::Object(hm) => hm,
-            _ => panic!("invalid value for bool"),
+            _ => panic!("invalid value for HashMap"),
+        }
+    }
+}
+
+impl FromValue<HashMap<String, String>> for Value {
+    fn from_value(self) -> HashMap<String, String> {
+        match self {
+            Value::Object(hm) => {
+                let mut src = hm;
+                let mut result: HashMap<String, String> = HashMap::new();
+                let keys: Vec<String> = src.keys().cloned().collect();
+                for key in keys {
+                    let value = src.remove(&key).unwrap();
+                    result.insert(key, value.from_value());
+                }
+                result
+            }
+            _ => panic!("invalid value for HashMap"),
         }
     }
 }

@@ -39,7 +39,7 @@ pub fn into_value_derive_inner(input: proc_macro::TokenStream) -> proc_macro::To
     let expanded = quote! {
         impl #impl_generics IntoValue<#name> for #name #ty_generics #where_clause {
 
-            fn into_value(self) -> value::value::Value {
+            fn into_value(&self) -> value::value::Value {
                 let mut hm: ::std::collections::HashMap<::std::string::String, value::value::Value> = ::std::collections::HashMap::new();
 
                 #(

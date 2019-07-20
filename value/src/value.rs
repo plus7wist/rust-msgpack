@@ -23,6 +23,32 @@ impl Default for Value {
     }
 }
 
+impl Clone for Value {
+    fn clone(&self) -> Self {
+        match self {
+            Value::Null => Value::Null,
+            Value::Bool(b) => Value::Bool(*b),
+            Value::Number(n) => Value::Number(n.clone()),
+            Value::String(s) => Value::String(s.clone()),
+            Value::Array(arr) => {
+                let mut result: Vec<Value> = Vec::new();
+                for x in arr {
+                    result.push(x.clone());
+                }
+                Value::Array(result)
+            }
+            Value::Object(hm) => {
+                let mut result: HashMap<String, Value> = HashMap::new();
+                for key in hm.keys() {
+                    let value = hm.get(key).unwrap();
+                    result.insert(key.clone(), value.clone());
+                }
+                Value::Object(result)
+            }
+        }
+    }
+}
+
 impl Value {
     pub fn get_type(&self) -> String {
         match self {

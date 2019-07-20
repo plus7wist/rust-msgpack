@@ -1,8 +1,8 @@
-use rust_msgpack::transvalue;
+use rust_msgpack::decode;
+use rust_msgpack::encode;
 use std::collections::HashMap;
 use value::from_value::FromValue;
 use value::into_value::IntoValue;
-use value::value::Value;
 use value_derive::*;
 
 #[derive(Debug, Default, FromValue, IntoValue)]
@@ -34,13 +34,10 @@ fn main() {
 
     println!("s1 = {:?}\n", s1);
 
-    let v1: Value = s1.into_value();
-    println!("v1 = {}", v1);
-
-    let bin = transvalue::msgpack_from_value(&v1).unwrap();
+    let bin = encode::encode(&s1).unwrap();
     println!("bin = {:?}\n", bin);
 
-    let v2 = transvalue::msgpack_into_value(&bin).unwrap();
+    let v2 = decode::decode_to_value(&bin).unwrap();
     println!("v2 = {}", v2);
 
     let s2: Student = v2.from_value();

@@ -4,6 +4,8 @@ use crate::error::Error as RMError;
 use crate::time;
 use crate::utils;
 use std::time::SystemTime;
+use value::into_value::IntoValue;
+use value::value::Value;
 
 pub struct Encoder {
     pub buf: Vec<u8>,
@@ -227,6 +229,43 @@ impl Encoder {
 
         self.write(&b)
     }
+}
+
+pub fn encode<T>(v: &T) -> Result<Vec<u8>, RMError>
+where
+    T: IntoValue<T>,
+{
+    let v = v.into_value();
+    encode_value(&v)
+}
+
+pub fn encode_value(v: &Value) -> Result<Vec<u8>, RMError> {
+    let mut enc = Encoder::new();
+    match v {
+        Value::Null => enc.encode_nil()?,
+        Value::Bool(b) => enc.encode_bool(*b)?,
+        Value::Number(n) => {
+            let num = n.parse::<f64>().unwrap();
+            enc.encode_float64(num)?;
+        }
+        Value::String(s) => enc.encode_string(&s)?,
+        Value::Array(arr) => {
+            enc.encode_array_len(arr.len() as i32)?;
+            for v in arr {
+                let sub = encode_value(v)?;
+                enc.buf.extend(sub);
+            }
+        }
+        Value::Object(hm) => {
+            enc.encode_map_len(hm.len() as i32)?;
+            for (key, value) in hm {
+                enc.encode_string(key)?;
+                let subvalue = encode_value(value)?;
+                enc.buf.extend(subvalue);
+            }
+        }
+    }
+    Ok(enc.buf)
 }
 
 #[cfg(test)]

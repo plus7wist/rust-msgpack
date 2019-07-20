@@ -23,11 +23,14 @@ impl IntoValue<String> for String {
     }
 }
 
-impl IntoValue<Vec<Value>> for Vec<Value> {
+impl<T> IntoValue<Vec<T>> for Vec<T>
+where
+    T: IntoValue<T> + Clone,
+{
     fn into_value(&self) -> Value {
         let mut result: Vec<Value> = Vec::new();
         for x in self {
-            result.push(x.clone());
+            result.push(x.clone().into_value());
         }
         Value::Array(result)
     }

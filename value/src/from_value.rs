@@ -5,6 +5,12 @@ pub trait FromValue<T>: Default {
     fn from_value(&self) -> T;
 }
 
+impl FromValue<Value> for Value {
+    fn from_value(&self) -> Value {
+        self.clone()
+    }
+}
+
 impl FromValue<bool> for Value {
     fn from_value(&self) -> bool {
         match self {
@@ -27,6 +33,156 @@ impl FromValue<Vec<Value>> for Value {
     fn from_value(&self) -> Vec<Value> {
         match self {
             Value::Array(a) => a.clone(),
+            _ => panic!("invalid value for Array"),
+        }
+    }
+}
+
+impl FromValue<Vec<u8>> for Value {
+    fn from_value(&self) -> Vec<u8> {
+        match self {
+            Value::Array(a) => {
+                let mut result: Vec<u8> = Vec::new();
+                for x in a {
+                    result.push(x.clone().from_value());
+                }
+                result
+            }
+            _ => panic!("invalid value for Array"),
+        }
+    }
+}
+
+impl FromValue<Vec<i8>> for Value {
+    fn from_value(&self) -> Vec<i8> {
+        match self {
+            Value::Array(a) => {
+                let mut result: Vec<i8> = Vec::new();
+                for x in a {
+                    result.push(x.clone().from_value());
+                }
+                result
+            }
+            _ => panic!("invalid value for Array"),
+        }
+    }
+}
+
+impl FromValue<Vec<u16>> for Value {
+    fn from_value(&self) -> Vec<u16> {
+        match self {
+            Value::Array(a) => {
+                let mut result: Vec<u16> = Vec::new();
+                for x in a {
+                    result.push(x.clone().from_value());
+                }
+                result
+            }
+            _ => panic!("invalid value for Array"),
+        }
+    }
+}
+
+impl FromValue<Vec<i16>> for Value {
+    fn from_value(&self) -> Vec<i16> {
+        match self {
+            Value::Array(a) => {
+                let mut result: Vec<i16> = Vec::new();
+                for x in a {
+                    result.push(x.clone().from_value());
+                }
+                result
+            }
+            _ => panic!("invalid value for Array"),
+        }
+    }
+}
+
+impl FromValue<Vec<u32>> for Value {
+    fn from_value(&self) -> Vec<u32> {
+        match self {
+            Value::Array(a) => {
+                let mut result: Vec<u32> = Vec::new();
+                for x in a {
+                    result.push(x.clone().from_value());
+                }
+                result
+            }
+            _ => panic!("invalid value for Array"),
+        }
+    }
+}
+
+impl FromValue<Vec<i32>> for Value {
+    fn from_value(&self) -> Vec<i32> {
+        match self {
+            Value::Array(a) => {
+                let mut result: Vec<i32> = Vec::new();
+                for x in a {
+                    result.push(x.clone().from_value());
+                }
+                result
+            }
+            _ => panic!("invalid value for Array"),
+        }
+    }
+}
+
+impl FromValue<Vec<u64>> for Value {
+    fn from_value(&self) -> Vec<u64> {
+        match self {
+            Value::Array(a) => {
+                let mut result: Vec<u64> = Vec::new();
+                for x in a {
+                    result.push(x.clone().from_value());
+                }
+                result
+            }
+            _ => panic!("invalid value for Array"),
+        }
+    }
+}
+
+impl FromValue<Vec<i64>> for Value {
+    fn from_value(&self) -> Vec<i64> {
+        match self {
+            Value::Array(a) => {
+                let mut result: Vec<i64> = Vec::new();
+                for x in a {
+                    result.push(x.clone().from_value());
+                }
+                result
+            }
+            _ => panic!("invalid value for Array"),
+        }
+    }
+}
+
+impl FromValue<Vec<f32>> for Value {
+    fn from_value(&self) -> Vec<f32> {
+        match self {
+            Value::Array(a) => {
+                let mut result: Vec<f32> = Vec::new();
+                for x in a {
+                    result.push(x.clone().from_value());
+                }
+                result
+            }
+            _ => panic!("invalid value for Array"),
+        }
+    }
+}
+
+impl FromValue<Vec<f64>> for Value {
+    fn from_value(&self) -> Vec<f64> {
+        match self {
+            Value::Array(a) => {
+                let mut result: Vec<f64> = Vec::new();
+                for x in a {
+                    result.push(x.clone().from_value());
+                }
+                result
+            }
             _ => panic!("invalid value for Array"),
         }
     }

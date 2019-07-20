@@ -1,0 +1,14 @@
+[package]
+name = "rust_msgpack_demo_2"
+version = "0.1.0"
+authors = ["huangjian <1342042894@qq.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rust_msgpack = { version = "0.1.0", path = "../../rust_msgpack" }
+value_derive = { path = "../../value_derive" }
+value = { path = "../../value" }
+
+[workspace]

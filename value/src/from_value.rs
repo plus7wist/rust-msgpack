@@ -2,55 +2,53 @@ use crate::value::*;
 use std::collections::HashMap;
 
 pub trait FromValue<T>: Default {
-    fn from_value(self) -> T;
+    fn from_value(&self) -> T;
 }
 
 impl FromValue<bool> for Value {
-    fn from_value(self) -> bool {
+    fn from_value(&self) -> bool {
         match self {
-            Value::Bool(n) => n,
+            Value::Bool(n) => *n,
             _ => panic!("invalid value for bool"),
         }
     }
 }
 
 impl FromValue<String> for Value {
-    fn from_value(self) -> String {
+    fn from_value(&self) -> String {
         match self {
-            Value::String(s) => s,
+            Value::String(s) => s.clone(),
             _ => panic!("invalid value for String"),
         }
     }
 }
 
 impl FromValue<Vec<Value>> for Value {
-    fn from_value(self) -> Vec<Value> {
+    fn from_value(&self) -> Vec<Value> {
         match self {
-            Value::Array(a) => a,
+            Value::Array(a) => a.clone(),
             _ => panic!("invalid value for Array"),
         }
     }
 }
 
 impl FromValue<HashMap<String, Value>> for Value {
-    fn from_value(self) -> HashMap<String, Value> {
+    fn from_value(&self) -> HashMap<String, Value> {
         match self {
-            Value::Object(hm) => hm,
+            Value::Object(hm) => hm.clone(),
             _ => panic!("invalid value for HashMap"),
         }
     }
 }
 
 impl FromValue<HashMap<String, String>> for Value {
-    fn from_value(self) -> HashMap<String, String> {
+    fn from_value(&self) -> HashMap<String, String> {
         match self {
             Value::Object(hm) => {
-                let mut src = hm;
                 let mut result: HashMap<String, String> = HashMap::new();
-                let keys: Vec<String> = src.keys().cloned().collect();
-                for key in keys {
-                    let value = src.remove(&key).unwrap();
-                    result.insert(key, value.from_value());
+                for key in hm.keys() {
+                    let value = hm.get(key).unwrap();
+                    result.insert(key.clone(), value.from_value());
                 }
                 result
             }
@@ -60,7 +58,7 @@ impl FromValue<HashMap<String, String>> for Value {
 }
 
 impl FromValue<u8> for Value {
-    fn from_value(self) -> u8 {
+    fn from_value(&self) -> u8 {
         match self {
             Value::Number(n) => {
                 let num = n.parse::<u8>().unwrap();
@@ -72,7 +70,7 @@ impl FromValue<u8> for Value {
 }
 
 impl FromValue<i8> for Value {
-    fn from_value(self) -> i8 {
+    fn from_value(&self) -> i8 {
         match self {
             Value::Number(n) => {
                 let num = n.parse::<i8>().unwrap();
@@ -84,7 +82,7 @@ impl FromValue<i8> for Value {
 }
 
 impl FromValue<u16> for Value {
-    fn from_value(self) -> u16 {
+    fn from_value(&self) -> u16 {
         match self {
             Value::Number(n) => {
                 let num = n.parse::<u16>().unwrap();
@@ -96,7 +94,7 @@ impl FromValue<u16> for Value {
 }
 
 impl FromValue<i16> for Value {
-    fn from_value(self) -> i16 {
+    fn from_value(&self) -> i16 {
         match self {
             Value::Number(n) => {
                 let num = n.parse::<i16>().unwrap();
@@ -108,7 +106,7 @@ impl FromValue<i16> for Value {
 }
 
 impl FromValue<u32> for Value {
-    fn from_value(self) -> u32 {
+    fn from_value(&self) -> u32 {
         match self {
             Value::Number(n) => {
                 let num = n.parse::<u32>().unwrap();
@@ -120,7 +118,7 @@ impl FromValue<u32> for Value {
 }
 
 impl FromValue<i32> for Value {
-    fn from_value(self) -> i32 {
+    fn from_value(&self) -> i32 {
         match self {
             Value::Number(n) => {
                 let num = n.parse::<i32>().unwrap();
@@ -132,7 +130,7 @@ impl FromValue<i32> for Value {
 }
 
 impl FromValue<u64> for Value {
-    fn from_value(self) -> u64 {
+    fn from_value(&self) -> u64 {
         match self {
             Value::Number(n) => {
                 let num = n.parse::<u64>().unwrap();
@@ -144,7 +142,7 @@ impl FromValue<u64> for Value {
 }
 
 impl FromValue<i64> for Value {
-    fn from_value(self) -> i64 {
+    fn from_value(&self) -> i64 {
         match self {
             Value::Number(n) => {
                 let num = n.parse::<i64>().unwrap();
@@ -156,7 +154,7 @@ impl FromValue<i64> for Value {
 }
 
 impl FromValue<f32> for Value {
-    fn from_value(self) -> f32 {
+    fn from_value(&self) -> f32 {
         match self {
             Value::Number(n) => {
                 let num = n.parse::<f32>().unwrap();
@@ -168,7 +166,7 @@ impl FromValue<f32> for Value {
 }
 
 impl FromValue<f64> for Value {
-    fn from_value(self) -> f64 {
+    fn from_value(&self) -> f64 {
         match self {
             Value::Number(n) => {
                 let num = n.parse::<f64>().unwrap();

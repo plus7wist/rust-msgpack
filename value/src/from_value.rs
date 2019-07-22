@@ -48,7 +48,14 @@ impl FromValue<Vec<u8>> for Value {
                 }
                 result
             }
-            _ => panic!("invalid value for Array"),
+            Value::String(s) => {
+                let mut result: Vec<u8> = Vec::new();
+                for x in s.as_bytes() {
+                    result.push(x.clone());
+                }
+                result
+            }
+            _ => panic!("invalid value for Array, type = {}", self.get_type()),
         }
     }
 }

@@ -23,6 +23,12 @@ impl IntoValue<String> for String {
     }
 }
 
+impl IntoValue<&str> for &str {
+    fn into_value(&self) -> Value {
+        Value::String(self.to_string())
+    }
+}
+
 impl<T> IntoValue<Vec<T>> for Vec<T>
 where
     T: IntoValue<T> + Clone,
@@ -38,21 +44,14 @@ where
 
 impl<HK, HV> IntoValue<HashMap<HK, HV>> for HashMap<HK, HV>
 where
-    HK: std::str::FromStr + std::string::ToString + std::hash::Hash + std::cmp::Eq,
+    HK: std::string::ToString + std::hash::Hash + std::cmp::Eq,
     HV: IntoValue<HV>,
 {
     fn into_value(&self) -> Value {
         let mut result: HashMap<String, Value> = HashMap::new();
-        let keys: Vec<String> = self.keys().map(|k| k.to_string()).collect();
-        for key in keys {
-            let k = HK::from_str(&key);
-            match k {
-                Ok(k) => {
-                    let value = self.get(&k).unwrap();
-                    result.insert(key.clone().to_string(), value.into_value());
-                }
-                Err(_) => panic!("invalid IntoValue<HashMap<HK, HV>>"),
-            }
+        for key in self.keys() {
+            let value = self.get(key).unwrap();
+            result.insert(key.to_string(), value.into_value());
         }
         Value::Object(result)
     }

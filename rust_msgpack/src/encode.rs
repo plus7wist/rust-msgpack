@@ -233,7 +233,7 @@ impl Encoder {
 
 pub fn encode<T>(v: &T) -> Result<Vec<u8>, RMError>
 where
-    T: IntoValue<T>,
+    T: IntoValue,
 {
     let v = v.into_value();
     encode_value(&v)

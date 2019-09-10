@@ -29,167 +29,13 @@ impl FromValue<String> for Value {
     }
 }
 
-impl FromValue<Vec<Value>> for Value {
-    fn from_value(&self) -> Vec<Value> {
+impl<T> FromValue<Vec<T>> for Value
+where
+    Value: FromValue<T>,
+{
+    fn from_value(&self) -> Vec<T> {
         match self {
-            Value::Array(a) => a.clone(),
-            _ => panic!("invalid value for Array"),
-        }
-    }
-}
-
-impl FromValue<Vec<u8>> for Value {
-    fn from_value(&self) -> Vec<u8> {
-        match self {
-            Value::Array(a) => {
-                let mut result: Vec<u8> = Vec::new();
-                for x in a {
-                    result.push(x.clone().from_value());
-                }
-                result
-            }
-            Value::String(s) => {
-                let mut result: Vec<u8> = Vec::new();
-                for x in s.as_bytes() {
-                    result.push(x.clone());
-                }
-                result
-            }
-            _ => panic!("invalid value for Array, type = {}", self.get_type()),
-        }
-    }
-}
-
-impl FromValue<Vec<i8>> for Value {
-    fn from_value(&self) -> Vec<i8> {
-        match self {
-            Value::Array(a) => {
-                let mut result: Vec<i8> = Vec::new();
-                for x in a {
-                    result.push(x.clone().from_value());
-                }
-                result
-            }
-            _ => panic!("invalid value for Array"),
-        }
-    }
-}
-
-impl FromValue<Vec<u16>> for Value {
-    fn from_value(&self) -> Vec<u16> {
-        match self {
-            Value::Array(a) => {
-                let mut result: Vec<u16> = Vec::new();
-                for x in a {
-                    result.push(x.clone().from_value());
-                }
-                result
-            }
-            _ => panic!("invalid value for Array"),
-        }
-    }
-}
-
-impl FromValue<Vec<i16>> for Value {
-    fn from_value(&self) -> Vec<i16> {
-        match self {
-            Value::Array(a) => {
-                let mut result: Vec<i16> = Vec::new();
-                for x in a {
-                    result.push(x.clone().from_value());
-                }
-                result
-            }
-            _ => panic!("invalid value for Array"),
-        }
-    }
-}
-
-impl FromValue<Vec<u32>> for Value {
-    fn from_value(&self) -> Vec<u32> {
-        match self {
-            Value::Array(a) => {
-                let mut result: Vec<u32> = Vec::new();
-                for x in a {
-                    result.push(x.clone().from_value());
-                }
-                result
-            }
-            _ => panic!("invalid value for Array"),
-        }
-    }
-}
-
-impl FromValue<Vec<i32>> for Value {
-    fn from_value(&self) -> Vec<i32> {
-        match self {
-            Value::Array(a) => {
-                let mut result: Vec<i32> = Vec::new();
-                for x in a {
-                    result.push(x.clone().from_value());
-                }
-                result
-            }
-            _ => panic!("invalid value for Array"),
-        }
-    }
-}
-
-impl FromValue<Vec<u64>> for Value {
-    fn from_value(&self) -> Vec<u64> {
-        match self {
-            Value::Array(a) => {
-                let mut result: Vec<u64> = Vec::new();
-                for x in a {
-                    result.push(x.clone().from_value());
-                }
-                result
-            }
-            _ => panic!("invalid value for Array"),
-        }
-    }
-}
-
-impl FromValue<Vec<i64>> for Value {
-    fn from_value(&self) -> Vec<i64> {
-        match self {
-            Value::Array(a) => {
-                let mut result: Vec<i64> = Vec::new();
-                for x in a {
-                    result.push(x.clone().from_value());
-                }
-                result
-            }
-            _ => panic!("invalid value for Array"),
-        }
-    }
-}
-
-impl FromValue<Vec<f32>> for Value {
-    fn from_value(&self) -> Vec<f32> {
-        match self {
-            Value::Array(a) => {
-                let mut result: Vec<f32> = Vec::new();
-                for x in a {
-                    result.push(x.clone().from_value());
-                }
-                result
-            }
-            _ => panic!("invalid value for Array"),
-        }
-    }
-}
-
-impl FromValue<Vec<f64>> for Value {
-    fn from_value(&self) -> Vec<f64> {
-        match self {
-            Value::Array(a) => {
-                let mut result: Vec<f64> = Vec::new();
-                for x in a {
-                    result.push(x.clone().from_value());
-                }
-                result
-            }
+            Value::Array(array) => array.iter().map(|x| x.from_value()).collect(),
             _ => panic!("invalid value for Array"),
         }
     }
@@ -220,122 +66,24 @@ impl FromValue<HashMap<String, String>> for Value {
     }
 }
 
-impl FromValue<u8> for Value {
-    fn from_value(&self) -> u8 {
-        match self {
-            Value::Number(n) => {
-                let num = n.parse::<u8>().unwrap();
-                num
-            }
-            _ => panic!("invalid value for u8"),
-        }
+macro_rules! mark_trait {
+    ($trait: ident; $($type: ty), *) => {
+        $(impl $trait for $type {})*
     }
 }
 
-impl FromValue<i8> for Value {
-    fn from_value(&self) -> i8 {
-        match self {
-            Value::Number(n) => {
-                let num = n.parse::<i8>().unwrap();
-                num
-            }
-            _ => panic!("invalid value for i8"),
-        }
-    }
-}
+pub trait ToNumber {}
+mark_trait!{ToNumber; i8, u8, i16, u16, i32, u32, i64, u64, f32, f64}
 
-impl FromValue<u16> for Value {
-    fn from_value(&self) -> u16 {
+impl<T> FromValue<T> for Value
+where
+    T: std::str::FromStr + ToNumber,
+    <T as std::str::FromStr>::Err: std::fmt::Debug,
+{
+    fn from_value(&self) -> T {
         match self {
-            Value::Number(n) => {
-                let num = n.parse::<u16>().unwrap();
-                num
-            }
-            _ => panic!("invalid value for u16"),
-        }
-    }
-}
-
-impl FromValue<i16> for Value {
-    fn from_value(&self) -> i16 {
-        match self {
-            Value::Number(n) => {
-                let num = n.parse::<i16>().unwrap();
-                num
-            }
-            _ => panic!("invalid value for i16"),
-        }
-    }
-}
-
-impl FromValue<u32> for Value {
-    fn from_value(&self) -> u32 {
-        match self {
-            Value::Number(n) => {
-                let num = n.parse::<u32>().unwrap();
-                num
-            }
-            _ => panic!("invalid value for u32"),
-        }
-    }
-}
-
-impl FromValue<i32> for Value {
-    fn from_value(&self) -> i32 {
-        match self {
-            Value::Number(n) => {
-                let num = n.parse::<i32>().unwrap();
-                num
-            }
-            _ => panic!("invalid value for i32"),
-        }
-    }
-}
-
-impl FromValue<u64> for Value {
-    fn from_value(&self) -> u64 {
-        match self {
-            Value::Number(n) => {
-                let num = n.parse::<u64>().unwrap();
-                num
-            }
-            _ => panic!("invalid value for u64"),
-        }
-    }
-}
-
-impl FromValue<i64> for Value {
-    fn from_value(&self) -> i64 {
-        match self {
-            Value::Number(n) => {
-                let num = n.parse::<i64>().unwrap();
-                num
-            }
-            _ => panic!("invalid value for i64"),
-        }
-    }
-}
-
-impl FromValue<f32> for Value {
-    fn from_value(&self) -> f32 {
-        match self {
-            Value::Number(n) => {
-                let num = n.parse::<f32>().unwrap();
-                num
-            }
-            _ => panic!("invalid value for f32"),
-        }
-    }
-}
-
-impl FromValue<f64> for Value {
-    fn from_value(&self) -> f64 {
-        match self {
-            Value::Number(n) => {
-                let num = n.parse::<f64>().unwrap();
-                num
-            }
-            _ => panic!("invalid value for f64"),
+            Value::Number(n) => n.parse().unwrap(),
+            _ => panic!("invalid value"),
         }
     }
 }

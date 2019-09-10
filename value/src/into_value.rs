@@ -1,37 +1,37 @@
 use crate::value::*;
 use std::collections::HashMap;
 
-pub trait IntoValue<T>: Default {
+pub trait IntoValue: Default {
     fn into_value(&self) -> Value;
 }
 
-impl IntoValue<Value> for Value {
+impl IntoValue for Value {
     fn into_value(&self) -> Value {
         self.clone()
     }
 }
 
-impl IntoValue<bool> for bool {
+impl IntoValue for bool {
     fn into_value(&self) -> Value {
         Value::Bool(*self)
     }
 }
 
-impl IntoValue<String> for String {
+impl IntoValue for String {
     fn into_value(&self) -> Value {
         Value::String(self.clone())
     }
 }
 
-impl IntoValue<&str> for &str {
+impl IntoValue for &str {
     fn into_value(&self) -> Value {
         Value::String(self.to_string())
     }
 }
 
-impl<T> IntoValue<Vec<T>> for Vec<T>
+impl<T> IntoValue for Vec<T>
 where
-    T: IntoValue<T> + Clone,
+    T: IntoValue + Clone,
 {
     fn into_value(&self) -> Value {
         let mut result: Vec<Value> = Vec::new();
@@ -42,10 +42,10 @@ where
     }
 }
 
-impl<HK, HV> IntoValue<HashMap<HK, HV>> for HashMap<HK, HV>
+impl<HK, HV> IntoValue for HashMap<HK, HV>
 where
     HK: std::string::ToString + std::hash::Hash + std::cmp::Eq,
-    HV: IntoValue<HV>,
+    HV: IntoValue,
 {
     fn into_value(&self) -> Value {
         let mut result: HashMap<String, Value> = HashMap::new();
@@ -57,61 +57,61 @@ where
     }
 }
 
-impl IntoValue<u8> for u8 {
+impl IntoValue for u8 {
     fn into_value(&self) -> Value {
         Value::Number(self.to_string())
     }
 }
 
-impl IntoValue<i8> for i8 {
+impl IntoValue for i8 {
     fn into_value(&self) -> Value {
         Value::Number(self.to_string())
     }
 }
 
-impl IntoValue<u16> for u16 {
+impl IntoValue for u16 {
     fn into_value(&self) -> Value {
         Value::Number(self.to_string())
     }
 }
 
-impl IntoValue<i16> for i16 {
+impl IntoValue for i16 {
     fn into_value(&self) -> Value {
         Value::Number(self.to_string())
     }
 }
 
-impl IntoValue<u32> for u32 {
+impl IntoValue for u32 {
     fn into_value(&self) -> Value {
         Value::Number(self.to_string())
     }
 }
 
-impl IntoValue<i32> for i32 {
+impl IntoValue for i32 {
     fn into_value(&self) -> Value {
         Value::Number(self.to_string())
     }
 }
 
-impl IntoValue<u64> for u64 {
+impl IntoValue for u64 {
     fn into_value(&self) -> Value {
         Value::Number(self.to_string())
     }
 }
 
-impl IntoValue<i64> for i64 {
+impl IntoValue for i64 {
     fn into_value(&self) -> Value {
         Value::Number(self.to_string())
     }
 }
 
-impl IntoValue<f32> for f32 {
+impl IntoValue for f32 {
     fn into_value(&self) -> Value {
         Value::Number(self.to_string())
     }
 }
 
-impl IntoValue<f64> for f64 {
+impl IntoValue for f64 {
     fn into_value(&self) -> Value {
         Value::Number(self.to_string())
     }

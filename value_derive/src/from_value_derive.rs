@@ -1,8 +1,16 @@
-use proc_macro2::TokenStream;
-use quote::{quote, quote_spanned};
-use syn::spanned::Spanned;
+// use proc_macro2::TokenStream;
+use quote::quote;
+// use syn::spanned::Spanned;
 use syn::{
-    parse_macro_input, parse_quote, Data, DeriveInput, Fields, GenericParam, Generics, Ident, Index,
+    parse_macro_input,
+    parse_quote,
+    Data,
+    DeriveInput,
+    Fields,
+    GenericParam,
+    Generics,
+    Ident,
+    // Index,
 };
 
 pub fn from_value_derive_inner(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
